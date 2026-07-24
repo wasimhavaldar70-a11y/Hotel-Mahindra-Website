@@ -16,6 +16,10 @@ import ReviewCard from "../cards/ReviewCard";
  */
 
 export default function GuestReviews() {
+  if (!reviewsData || reviewsData.length === 0) {
+    return null;
+  }
+
   return (
     <section className="py-24 md:py-32 px-6 md:px-12 bg-bg-base" aria-labelledby="reviews-heading">
       <div className="max-w-7xl mx-auto space-y-16">
@@ -39,9 +43,6 @@ export default function GuestReviews() {
             <ReviewCard key={review.id} review={review} />
           ))}
         </div>
-
-        {/* Informative Handover Notice (Strictly in comments, or a small subtle text warning if needed, but here we just comment it) */}
-        {/* Note: All reviews above are placeholders. Real guest comments can be dynamically configured in data/reviews.ts */}
       </div>
     </section>
   );

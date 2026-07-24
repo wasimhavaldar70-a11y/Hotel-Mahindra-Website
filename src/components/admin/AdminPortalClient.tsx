@@ -201,15 +201,6 @@ export default function AdminPortalClient() {
     loadSupabaseData();
   }, []);
 
-  // Handle Quick Demo Fill
-  const handleAutoFillDemo = () => {
-    setUsername("hotelmahendra70@gmail.com");
-    setPassword("hotel@7171");
-    setErrorMsg("");
-    setSuccessToast("Admin credentials filled! Click 'Sign In' to proceed.");
-    setTimeout(() => setSuccessToast(""), 4000);
-  };
-
   // Handle Login Submit with Supabase Auth & Local Fallback
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1156,24 +1147,21 @@ export default function AdminPortalClient() {
                   <div className="text-center space-y-1">
                     <h3 className="font-serif text-lg font-bold text-text-main">Password Reset Assistance</h3>
                     <p className="text-xs text-text-muted font-sans leading-relaxed">
-                      For administrative security, admin credentials are tied to the hotel reception terminal.
+                      For security, password reset requests are managed via your Supabase Admin Dashboard or reception IT administrator.
                     </p>
                   </div>
 
-                  <div className="bg-bg-alt p-3.5 rounded-lg border border-border-custom text-xs space-y-1 text-text-main">
-                    <p className="font-bold">Admin Credentials:</p>
-                    <p className="font-mono text-text-muted">Email: hotelmahendra70@gmail.com</p>
-                    <p className="font-mono text-text-muted">Password: hotel@7171</p>
+                  <div className="bg-stone-50 p-3.5 rounded-lg border border-stone-200 text-xs space-y-1 text-stone-700">
+                    <p className="font-bold">Contact Support:</p>
+                    <p className="text-stone-500">Phone: {hotelConfig.phoneDisplay}</p>
+                    <p className="text-stone-500">Email: {hotelConfig.email}</p>
                   </div>
 
                   <button
-                    onClick={() => {
-                      setShowForgotModal(false);
-                      handleAutoFillDemo();
-                    }}
-                    className="w-full bg-primary hover:bg-primary-dark text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all"
+                    onClick={() => setShowForgotModal(false)}
+                    className="w-full bg-stone-900 hover:bg-stone-800 text-white py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all cursor-pointer"
                   >
-                    Auto-Fill Credentials & Close
+                    Close
                   </button>
                 </motion.div>
               </motion.div>
