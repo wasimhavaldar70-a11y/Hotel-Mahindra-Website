@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+/*
+ * ============================================================================
+ * GLOBAL DESIGN SYSTEM & TAILWIND V4 STYLING
+ * 
+ * PURPOSE:
+ * Establishes our premium budget hotel visual framework.
+ * Sets the color tokens, typography rules, and luxury micro-interactions.
+ * ============================================================================
+ */
+
+:root {
+  /* Color Palette (Obsidian Charcoal, Soft Sand, Champagne Gold, Ivory Warmth) */
+  --bg-base: #FCFBF9;      /* Elegant Warm Ivory base background */
+  --bg-alt: #F4EFEB;       /* Warm beige alternative section background */
+  --text-main: #1C1B19;    /* Clean, soft charcoal text (easier on eyes than absolute black) */
+  --text-muted: #5C5852;   /* Soft slate gray for descriptions */
+  --primary: #C5A880;      /* Soft Champagne Gold */
+  --primary-dark: #9F8560; /* Darker Gold for hover/focus targets */
+  --border-color: #E6E0D5; /* Gentle border gray */
+}
+
+/* Map CSS variables to Tailwind v4 Theme directive */
+@theme {
+  --color-bg-base: var(--bg-base);
+  --color-bg-alt: var(--bg-alt);
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-border-custom: var(--border-color);
+
+  --font-serif: var(--font-serif), Georgia, serif;
+  --font-sans: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Base DOM Adjustments */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-base);
+  color: var(--text-main);
+}
+
+body {
+  background-color: var(--bg-base);
+  color: var(--text-main);
+  overflow-x: hidden;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Focus Ring Customization for Accessibility */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+
+/* Masonry Grid Utilities for Gallery */
+.masonry-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-gap: 24px;
+  grid-auto-flow: dense;
+}
+
+.masonry-item {
+  break-inside: avoid;
+}
+
+@media (min-width: 768px) {
+  .masonry-item-double {
+    grid-column: span 2;
+  }
+}
