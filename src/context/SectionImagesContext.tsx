@@ -255,6 +255,9 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
     async function fetchFromSupabase() {
       if (!client) return;
       try {
+        const fetchedMap: Partial<Record<SectionKey, SectionImageItem[]>> = {};
+
+        // 1. Fetch from DB table 'section_images'
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data: dbItems, error } = await (client as any)
           .from("section_images")
@@ -262,8 +265,6 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
           .order("sort_order", { ascending: true });
 
         if (!error && dbItems && Array.isArray(dbItems) && dbItems.length > 0) {
-          const fetchedMap: Partial<Record<SectionKey, SectionImageItem[]>> = {};
-
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           dbItems.forEach((row: any) => {
             const secKey = row.section_key as SectionKey;
@@ -281,7 +282,97 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
               createdAt: row.created_at
             });
           });
+        }
 
+        // 2. Fetch directly from Supabase Storage bucket 'attractions'
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: attractionStorageFiles } = await (client as any).storage
+            .from("attractions")
+            .list("", { limit: 50 });
+
+          if (attractionStorageFiles && Array.isArray(attractionStorageFiles)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const validFiles = attractionStorageFiles.filter((f: any) => f.name && !f.name.startsWith("."));
+            if (validFiles.length > 0) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const storageItems: SectionImageItem[] = validFiles.map((file: any, idx: number) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const publicUrlData = (client as any).storage.from("attractions").getPublicUrl(file.name);
+                const publicUrl = publicUrlData?.data?.publicUrl || 
+                  `https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/attractions/${file.name}`;
+                
+                const fallback = attractionsData[idx] || attractionsData[0];
+                const fileCleanTitle = file.name
+                  .replace(/\.[^/.]+$/, "")
+                  .replace(/[-_]/g, " ")
+                  .replace(/\b\w/g, (l: string) => l.toUpperCase());
+
+                return {
+                  id: `storage-att-${idx}`,
+                  sectionKey: "attractions",
+                  url: publicUrl,
+                  title: fileCleanTitle || fallback.name,
+                  description: fallback.description,
+                  category: "Pilgrimage",
+                  sortOrder: idx
+                };
+              });
+
+              if (!fetchedMap["attractions"] || fetchedMap["attractions"].length === 0) {
+                fetchedMap["attractions"] = storageItems;
+              }
+            }
+          }
+        } catch (storageEx) {
+          console.log("Attractions bucket check:", storageEx);
+        }
+
+        // 3. Fetch directly from Supabase Storage bucket 'hotel-images' -> 'attractions' folder
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: hotelImageStorageFiles } = await (client as any).storage
+            .from("hotel-images")
+            .list("attractions", { limit: 50 });
+
+          if (hotelImageStorageFiles && Array.isArray(hotelImageStorageFiles)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const validFiles = hotelImageStorageFiles.filter((f: any) => f.name && !f.name.startsWith("."));
+            if (validFiles.length > 0) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              const storageItems: SectionImageItem[] = validFiles.map((file: any, idx: number) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const publicUrlData = (client as any).storage.from("hotel-images").getPublicUrl(`attractions/${file.name}`);
+                const publicUrl = publicUrlData?.data?.publicUrl || 
+                  `https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/hotel-images/attractions/${file.name}`;
+                
+                const fallback = attractionsData[idx] || attractionsData[0];
+                const fileCleanTitle = file.name
+                  .replace(/\.[^/.]+$/, "")
+                  .replace(/[-_]/g, " ")
+                  .replace(/\b\w/g, (l: string) => l.toUpperCase());
+
+                return {
+                  id: `storage-hotel-att-${idx}`,
+                  sectionKey: "attractions",
+                  url: publicUrl,
+                  title: fileCleanTitle || fallback.name,
+                  description: fallback.description,
+                  category: "Pilgrimage",
+                  sortOrder: idx
+                };
+              });
+
+              if (!fetchedMap["attractions"] || fetchedMap["attractions"].length === 0) {
+                fetchedMap["attractions"] = storageItems;
+              }
+            }
+          }
+        } catch (storageEx2) {
+          console.log("Hotel images attractions folder check:", storageEx2);
+        }
+
+        if (Object.keys(fetchedMap).length > 0) {
           setImagesMap((prev) => {
             const updated = { ...prev };
             (Object.keys(fetchedMap) as SectionKey[]).forEach((k) => {
@@ -289,7 +380,6 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
                 updated[k] = fetchedMap[k]!;
               }
             });
-            // Persist synced data to localStorage
             if (typeof window !== "undefined") {
               localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
             }
@@ -297,7 +387,7 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
           });
         }
       } catch (err) {
-        console.log("Supabase section_images check completed:", err);
+        console.log("Supabase fetch completed:", err);
       }
     }
 
