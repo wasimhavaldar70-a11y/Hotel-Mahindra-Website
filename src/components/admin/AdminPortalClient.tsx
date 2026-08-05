@@ -247,7 +247,7 @@ export default function AdminPortalClient() {
     setTimeout(() => {
       setIsLoading(false);
       if (
-        (cleanUsername === "hotelmahendra70@gmail.com" || cleanUsername === "admin") &&
+        (cleanUsername === "hotelmahendra70@gmail.com" || cleanUsername === "hotelmahendra07@gmail.com" || cleanUsername === "admin") &&
         password === "hotel@7171"
       ) {
         setIsAuthenticated(true);

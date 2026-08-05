@@ -102,9 +102,9 @@ const SECTIONS_CONFIG: SectionConfig[] = [
     label: "Gallery Showcase",
     shortLabel: "Gallery",
     icon: Layers,
-    description: "Full hotel photo portfolio on homepage & /gallery filter page.",
+    description: "Full hotel photo portfolio assets.",
     recommendedAspect: "4:3 or 1:1 Square",
-    liveRoute: "/gallery",
+    liveRoute: "/",
     categories: ["rooms", "exterior", "lobby", "dining", "general"]
   }
 ];
@@ -137,11 +137,71 @@ export default function SectionImagesManager() {
   const [editTitle, setEditTitle] = useState("");
   const [editDesc, setEditDesc] = useState("");
   const [editCategory, setEditCategory] = useState("");
+  const [editUrl, setEditUrl] = useState("");
+  const [editPreviewUrl, setEditPreviewUrl] = useState("");
+  const [editFile, setEditFile] = useState<File | null>(null);
+  const [isUploadingItemId, setIsUploadingItemId] = useState<string | null>(null);
 
   const currentConfig = SECTIONS_CONFIG.find((s) => s.key === activeSectionKey)!;
   const currentImages = getSectionImages(activeSectionKey);
 
-  // Handle local file selection
+  // Handle direct single item file upload
+  const handleDirectItemFileUpload = async (item: SectionImageItem, file: File) => {
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError("Image size should be under 5MB.");
+      return;
+    }
+
+    setIsUploadingItemId(item.id);
+    setUploadError("");
+    setUploadSuccess("");
+
+    try {
+      let finalUrl = "";
+      const client = supabase;
+      if (client) {
+        try {
+          const fileExt = file.name.split(".").pop();
+          const fileName = `${activeSectionKey}/${Date.now()}-${Math.random().toString(36).substr(2, 4)}.${fileExt}`;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: storageData, error: storageErr } = await (client as any).storage
+            .from("hotel-images")
+            .upload(fileName, file);
+
+          if (!storageErr && storageData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: publicUrlData } = (client as any).storage
+              .from("hotel-images")
+              .getPublicUrl(fileName);
+            if (publicUrlData?.publicUrl) {
+              finalUrl = publicUrlData.publicUrl;
+            }
+          }
+        } catch (storageEx) {
+          console.log("Supabase storage upload fallback:", storageEx);
+        }
+      }
+
+      if (!finalUrl) {
+        finalUrl = await new Promise<string>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => resolve(event.target?.result as string);
+          reader.readAsDataURL(file);
+        });
+      }
+
+      await updateSectionImage(activeSectionKey, item.id, { url: finalUrl });
+      setUploadSuccess(`Successfully updated photo for "${item.title}"!`);
+      setTimeout(() => setUploadSuccess(""), 4000);
+    } catch (err) {
+      console.error(err);
+      setUploadError("Failed to update photo. Please try again.");
+    } finally {
+      setIsUploadingItemId(null);
+    }
+  };
+
+  // Handle local file selection for new upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -255,16 +315,51 @@ export default function SectionImagesManager() {
     setEditTitle(item.title);
     setEditDesc(item.description || "");
     setEditCategory(item.category || "");
+    setEditUrl(item.url);
+    setEditPreviewUrl(item.url);
+    setEditFile(null);
   };
 
   // Save Inline Editing
   const saveEdit = async (id: string) => {
+    let finalUrl = editUrl.trim() || undefined;
+    if (editFile) {
+      const client = supabase;
+      if (client) {
+        try {
+          const fileExt = editFile.name.split(".").pop();
+          const fileName = `${activeSectionKey}/${Date.now()}-${Math.random().toString(36).substr(2, 4)}.${fileExt}`;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { data: storageData, error: storageErr } = await (client as any).storage
+            .from("hotel-images")
+            .upload(fileName, editFile);
+
+          if (!storageErr && storageData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const { data: publicUrlData } = (client as any).storage
+              .from("hotel-images")
+              .getPublicUrl(fileName);
+            if (publicUrlData?.publicUrl) {
+              finalUrl = publicUrlData.publicUrl;
+            }
+          }
+        } catch (storageEx) {
+          console.log("Storage upload fallback:", storageEx);
+        }
+      }
+      if (!finalUrl || finalUrl === editUrl) {
+        finalUrl = editPreviewUrl;
+      }
+    }
+
     await updateSectionImage(activeSectionKey, id, {
       title: editTitle.trim(),
       description: editDesc.trim() || undefined,
-      category: editCategory.trim() || undefined
+      category: editCategory.trim() || undefined,
+      url: finalUrl
     });
     setEditingId(null);
+    setEditFile(null);
   };
 
   return (
@@ -584,6 +679,7 @@ export default function SectionImagesManager() {
               <div className="space-y-4">
                 {currentImages.map((item, index) => {
                   const isEditing = editingId === item.id;
+                  const isUploadingThis = isUploadingItemId === item.id;
 
                   return (
                     <motion.div
@@ -598,34 +694,114 @@ export default function SectionImagesManager() {
                         #{index + 1}
                       </div>
 
-                      {/* Image Thumbnail */}
-                      <div className="relative w-full sm:w-40 aspect-[16/10] shrink-0 bg-stone-100 rounded-xl overflow-hidden border border-stone-200">
+                      {/* Interactive Image Thumbnail (Clickable to Upload / Add Photo) */}
+                      <label
+                        className="relative w-full sm:w-44 aspect-[16/10] shrink-0 bg-stone-100 rounded-xl overflow-hidden border-2 border-dashed border-stone-300 hover:border-amber-600 transition-all cursor-pointer group/thumb block shadow-sm"
+                        title="Click to add or change photo for this attraction"
+                      >
                         <CustomImage
-                          src={item.url}
+                          src={isEditing ? editPreviewUrl : item.url}
                           alt={item.title}
                           fill
                           sizes="200px"
                         />
-                      </div>
+
+                        {/* Interactive Hover Overlay with Upload Action */}
+                        <div className="absolute inset-0 bg-stone-900/85 backdrop-blur-[2px] opacity-0 group-hover/thumb:opacity-100 transition-all flex flex-col items-center justify-center text-white p-2 text-center z-10">
+                          <UploadCloud size={24} className="text-amber-400 mb-1 animate-bounce" />
+                          <span className="text-[11px] font-bold tracking-wide">
+                            {isUploadingThis ? "Uploading to Cloud..." : "Click to Upload Photo"}
+                          </span>
+                          <span className="text-[9px] text-white/70 mt-0.5">JPG, PNG, WEBP</span>
+                        </div>
+
+                        {/* Floating "Add Photo" Pill */}
+                        <div className="absolute bottom-2 right-2 z-10 bg-amber-500 hover:bg-amber-600 text-stone-950 text-[10px] font-bold px-2 py-0.5 rounded shadow flex items-center gap-1 group-hover/thumb:hidden">
+                          <UploadCloud size={10} />
+                          <span>Add Photo</span>
+                        </div>
+
+                        {/* Hidden File Input for direct click upload */}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          disabled={isUploadingThis}
+                          className="hidden"
+                          onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                              handleDirectItemFileUpload(item, e.target.files[0]);
+                            }
+                          }}
+                        />
+                      </label>
 
                       {/* Details / Inline Form */}
-                      <div className="flex-1 space-y-1.5 w-full">
+                      <div className="flex-1 space-y-2 w-full">
                         {isEditing ? (
                           <div className="space-y-2 py-1">
-                            <input
-                              type="text"
-                              value={editTitle}
-                              onChange={(e) => setEditTitle(e.target.value)}
-                              placeholder="Title"
-                              className="w-full bg-stone-50 border border-stone-200 p-2.5 rounded-lg text-xs font-bold text-stone-900"
-                            />
-                            <input
-                              type="text"
-                              value={editDesc}
-                              onChange={(e) => setEditDesc(e.target.value)}
-                              placeholder="Description"
-                              className="w-full bg-stone-50 border border-stone-200 p-2.5 rounded-lg text-xs text-stone-600"
-                            />
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                                Title
+                              </label>
+                              <input
+                                type="text"
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                placeholder="Title"
+                                className="w-full bg-stone-50 border border-stone-200 p-2.5 rounded-lg text-xs font-bold text-stone-900"
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-bold uppercase tracking-wider text-stone-500">
+                                Description
+                              </label>
+                              <input
+                                type="text"
+                                value={editDesc}
+                                onChange={(e) => setEditDesc(e.target.value)}
+                                placeholder="Description"
+                                className="w-full bg-stone-50 border border-stone-200 p-2.5 rounded-lg text-xs text-stone-600"
+                              />
+                            </div>
+
+                            {/* Image Option inside Edit mode */}
+                            <div className="space-y-1 bg-amber-50/50 p-2.5 rounded-xl border border-amber-200/60">
+                              <label className="text-[10px] font-bold uppercase tracking-wider text-amber-900 block">
+                                Change Image File / URL
+                              </label>
+                              <div className="flex items-center gap-2">
+                                <label className="bg-white border border-stone-200 hover:border-amber-600 text-stone-800 text-[11px] font-bold px-3 py-1.5 rounded-lg cursor-pointer flex items-center gap-1 shadow-sm shrink-0">
+                                  <UploadCloud size={14} className="text-amber-600" />
+                                  <span>Choose File</span>
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                        const file = e.target.files[0];
+                                        setEditFile(file);
+                                        const reader = new FileReader();
+                                        reader.onload = (ev) => setEditPreviewUrl(ev.target?.result as string);
+                                        reader.readAsDataURL(file);
+                                      }
+                                    }}
+                                  />
+                                </label>
+                                <input
+                                  type="text"
+                                  value={editUrl}
+                                  onChange={(e) => {
+                                    setEditUrl(e.target.value);
+                                    setEditPreviewUrl(e.target.value);
+                                  }}
+                                  placeholder="Or paste CDN image URL"
+                                  className="w-full bg-white border border-stone-200 p-1.5 rounded-lg text-xs text-stone-600"
+                                />
+                              </div>
+                            </div>
+
                             {currentConfig.categories && (
                               <input
                                 type="text"
@@ -638,10 +814,10 @@ export default function SectionImagesManager() {
                             <div className="flex items-center gap-2 pt-1">
                               <button
                                 onClick={() => saveEdit(item.id)}
-                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer shadow-sm"
                               >
                                 <Check size={12} />
-                                Save
+                                Save Changes
                               </button>
                               <button
                                 onClick={() => setEditingId(null)}
@@ -664,14 +840,35 @@ export default function SectionImagesManager() {
                                 </span>
                               )}
                             </div>
+
                             {item.description && (
                               <p className="text-stone-500 text-xs leading-normal">
                                 {item.description}
                               </p>
                             )}
-                            <p className="text-[10px] text-stone-400 font-mono truncate max-w-md pt-0.5">
-                              URL: {item.url}
-                            </p>
+
+                            {/* Direct Upload Action Button */}
+                            <div className="pt-1 flex flex-wrap items-center gap-2">
+                              <label className="inline-flex items-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-stone-950 font-bold px-3 py-1.5 rounded-lg text-[11px] transition-colors cursor-pointer shadow-sm">
+                                <UploadCloud size={14} />
+                                <span>{isUploadingThis ? "Uploading..." : "Upload Photo to Vacant Image"}</span>
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  disabled={isUploadingThis}
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                      handleDirectItemFileUpload(item, e.target.files[0]);
+                                    }
+                                  }}
+                                />
+                              </label>
+
+                              <span className="text-[10px] text-stone-400 font-mono truncate max-w-xs">
+                                URL: {item.url}
+                              </span>
+                            </div>
                           </>
                         )}
                       </div>

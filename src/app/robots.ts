@@ -14,7 +14,7 @@ import { MetadataRoute } from 'next';
  */
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = 'https://mahendrahotel.in'; // Replace with production URL in final build
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hotelmahendradeluxe.com';
   return {
     rules: {
       userAgent: '*',

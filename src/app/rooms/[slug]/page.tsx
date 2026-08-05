@@ -87,10 +87,7 @@ export default async function RoomDetailsPage({ params }: RoomDetailsPageProps) 
               <h1 className="font-serif text-3xl font-bold tracking-wide text-text-main pt-1">
                 {room.name}
               </h1>
-              <div className="flex items-baseline gap-1 pt-1">
-                <span className="font-serif text-2xl font-bold text-text-main">{room.price}</span>
-                <span className="text-xs text-text-muted font-sans font-medium"> / Night (Direct Booking Rate)</span>
-              </div>
+
             </div>
 
             <p className="text-text-muted text-sm leading-relaxed">

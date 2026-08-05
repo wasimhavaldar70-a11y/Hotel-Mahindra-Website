@@ -12,10 +12,10 @@ import { roomsData } from '../data/rooms';
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://mahendrahotel.in'; // Replace with production URL in final build
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hotelmahendradeluxe.com';
   
   // Static page routing maps
-  const staticRoutes = ['', '/about', '/rooms', '/gallery', '/nearby', '/contact', '/privacy', '/terms'].map((route) => ({
+  const staticRoutes = ['', '/about', '/rooms', '/nearby', '/contact', '/privacy', '/terms'].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,

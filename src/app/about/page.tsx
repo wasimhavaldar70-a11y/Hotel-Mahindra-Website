@@ -40,43 +40,28 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Narrative Section (Split Columns) */}
-      <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          
-          {/* Text block */}
-          <div className="lg:col-span-7 space-y-6">
-            <h2 className="font-serif text-2xl md:text-3xl font-bold text-text-main">
-              A Legacy of Hospitality and Security
-            </h2>
-            <p className="text-text-muted font-sans text-sm md:text-base leading-relaxed">
-              Conveniently situated on the NH4 Highway near Vathar Tarf Vadgaon, Kolhapur, 
-              <strong> {hotelConfig.name}</strong> was founded to offer high-quality, safe, and clean accommodations 
-              for families, solo pilgrims, and business visitors who want comfortable lodging without paying 
-              inflated luxury prices.
-            </p>
-            <p className="text-text-muted font-sans text-sm md:text-base leading-relaxed">
-              We understand that visiting a historic city can be exhausting. That is why we focus strictly 
-              on the details that matter most: highly comfortable beds, pristine hygiene, 24/7 geyser hot water, 
-              high-speed Wi-Fi, round-the-clock reception support, and secure guarded parking.
-            </p>
-            <p className="text-text-muted font-sans text-sm md:text-base leading-relaxed">
-              Our location along the highway allows travelers to check in instantly at any hour of the night, 
-              rest in absolute quietness, and reach holy spots like the Ambabai 
-              Mahalaxmi Temple in just a few minutes.
-            </p>
-          </div>
-
-          {/* Large Editorial Image */}
-          <div className="lg:col-span-5 relative aspect-[4/3] overflow-hidden shadow-md">
-            <CustomImage
-              src={IMAGES.hero.mainSlide2}
-              alt="Hotel lobby reception desk area"
-              fill
-              sizes="(max-width: 768px) 100vw, 500px"
-            />
-          </div>
-
+      {/* Narrative Section */}
+      <section className="py-16 md:py-24 px-6 md:px-12 max-w-4xl mx-auto">
+        <div className="space-y-6">
+          <h2 className="font-serif text-2xl md:text-3xl font-bold text-text-main">
+            A Legacy of Hospitality and Security
+          </h2>
+          <p className="text-text-muted font-sans text-sm md:text-base leading-relaxed">
+            Conveniently situated on the NH4 Highway near Vathar Tarf Vadgaon, Kolhapur, 
+            <strong> {hotelConfig.name}</strong> was founded to offer high-quality, safe, and clean accommodations 
+            for families, solo pilgrims, and business visitors who want comfortable lodging without paying 
+            inflated luxury prices.
+          </p>
+          <p className="text-text-muted font-sans text-sm md:text-base leading-relaxed">
+            We understand that visiting a historic city can be exhausting. That is why we focus strictly 
+            on the details that matter most: highly comfortable beds, pristine hygiene, 24/7 geyser hot water, 
+            high-speed Wi-Fi, round-the-clock reception support, and secure guarded parking.
+          </p>
+          <p className="text-text-muted font-sans text-sm md:text-base leading-relaxed">
+            Our location along the highway allows travelers to check in instantly at any hour of the night, 
+            rest in absolute quietness, and reach holy spots like the Ambabai 
+            Mahalaxmi Temple in just a few minutes.
+          </p>
         </div>
       </section>
 

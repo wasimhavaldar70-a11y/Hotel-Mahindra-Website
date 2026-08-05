@@ -24,7 +24,7 @@ export const IMAGES = {
   // ABOUT US CONTENT
   about: {
     lobbyView: "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=1000&q=80", // Clean lobby & seating area
-    serviceSmile: "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1000&q=80" // Reception service & hospitality
+    serviceSmile: "https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=1000&q=80" // Reception lobby counter
   },
 
   // ROOM DEMO SETS

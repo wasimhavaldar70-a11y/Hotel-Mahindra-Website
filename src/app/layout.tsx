@@ -37,6 +37,44 @@ export const metadata: Metadata = defaultSeo;
  * ============================================================================
  */
 
+import { hotelConfig } from "../config/hotel";
+
+// Hotel Schema.org JSON-LD for Search Engine Knowledge Graph indexing
+const hotelJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Hotel",
+  "name": "Hotel Mahendra Deluxe",
+  "alternateName": ["Hotel Mahindra Deluxe", "Hotel Mahendra", "Hotel Mahindra", "Mahendra Hotel Kolhapur"],
+  "description": "Hotel Mahendra Deluxe is a clean, secure, and family-friendly premium budget hotel located on NH4 Highway, Vathar Tarf Vadgaon, Kolhapur, Maharashtra.",
+  "url": process.env.NEXT_PUBLIC_SITE_URL || "https://www.hotelmahendradeluxe.com",
+  "telephone": hotelConfig.phoneDial,
+  "email": hotelConfig.email,
+  "priceRange": "₹1000 - ₹3000",
+  "checkinTime": "12:00",
+  "checkoutTime": "11:00",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": hotelConfig.address,
+    "addressLocality": "Kolhapur",
+    "addressRegion": "Maharashtra",
+    "postalCode": "416112",
+    "addressCountry": "IN"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 16.8228,
+    "longitude": 74.2917
+  },
+  "image": [
+    `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.hotelmahendradeluxe.com'}/images/og-image.jpg`
+  ],
+  "sameAs": [
+    hotelConfig.googleMapsUrl,
+    hotelConfig.socials.facebook,
+    hotelConfig.socials.instagram
+  ].filter(Boolean)
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,6 +85,12 @@ export default function RootLayout({
       lang="en" 
       className={`${plusJakartaSans.variable} ${inter.variable}`}
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(hotelJsonLd) }}
+        />
+      </head>
       <body className="antialiased flex flex-col min-h-screen bg-bg-base text-text-main font-sans">
         <SectionImagesProvider>
           {/* Sticky Header Navigation */}

@@ -16,7 +16,7 @@
 
 export const hotelConfig = {
   // BRAND INFO
-  name: "Hotel Mahindra Deluxe",
+  name: "Hotel Mahendra Deluxe",
   logoText: "MAHENDRA",
   logoSubtext: "DELUXE",
   tagline: "Your Comfort, Our Commitment",

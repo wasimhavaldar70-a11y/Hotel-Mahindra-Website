@@ -12,21 +12,35 @@
 import { Metadata } from 'next';
 import { hotelConfig } from './hotel';
 
-const baseUrl = "https://mahendrahotel.in"; // Replace with production URL
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.hotelmahendradeluxe.com";
 
 export const defaultSeo: Metadata = {
   title: {
     default: `${hotelConfig.name} | Premium Budget Hotel in Kolhapur`,
     template: `%s | ${hotelConfig.name} Kolhapur`
   },
-  description: `${hotelConfig.name} is a clean, secure, and family-friendly premium budget hotel located opposite Central Bus Stand in Kolhapur, Maharashtra. Enjoy premium amenities at affordable rates.`,
+  description: `${hotelConfig.name} (Hotel Mahindra Deluxe) is a clean, secure, and family-friendly premium budget hotel located on NH4 Highway, Vathar Tarf Vadgaon, Kolhapur, Maharashtra. Book comfortable rooms at affordable rates.`,
   keywords: [
-    "Mahendra Hotel", "Hotel Mahendra Kolhapur", "budget hotel in kolhapur", 
-    "premium budget hotel", "hotel near kolhapur bus stand", "family hotel kolhapur",
-    "mahalaxmi temple hotel", "clean rooms kolhapur", "best accommodation kolhapur"
+    "hotel mahendra deluxe",
+    "hotel mahendra deluxe kolhapur",
+    "hotel mahindra deluxe",
+    "hotel mahindra deluxe kolhapur",
+    "hotel mahendra",
+    "hotel mahindra",
+    "Hotel Mahendra",
+    "Hotel Mahindra Deluxe",
+    "budget hotel in kolhapur", 
+    "premium budget hotel kolhapur", 
+    "hotel near kolhapur bus stand", 
+    "hotel near nh4 highway kolhapur",
+    "vathar vadgaon hotel",
+    "family hotel kolhapur",
+    "mahalaxmi temple hotel", 
+    "clean rooms kolhapur", 
+    "best accommodation kolhapur"
   ],
-  authors: [{ name: "Mahendra Hotel Agency" }],
-  creator: "Mahendra Hotel",
+  authors: [{ name: "Hotel Mahendra Deluxe" }],
+  creator: "Hotel Mahendra Deluxe",
   metadataBase: new URL(baseUrl),
   alternates: {
     canonical: '/'
@@ -36,7 +50,7 @@ export const defaultSeo: Metadata = {
     locale: 'en_IN',
     url: baseUrl,
     title: `${hotelConfig.name} | Premium Budget Hotel in Kolhapur`,
-    description: `${hotelConfig.name} is a clean, secure, and family-friendly premium budget hotel located opposite Central Bus Stand in Kolhapur, Maharashtra.`,
+    description: `${hotelConfig.name} (Hotel Mahindra Deluxe) is a clean, secure, and family-friendly premium budget hotel located on NH4 Highway, Vathar Tarf Vadgaon, Kolhapur, Maharashtra.`,
     siteName: hotelConfig.name,
     images: [
       {
@@ -50,7 +64,7 @@ export const defaultSeo: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: `${hotelConfig.name} | Premium Budget Hotel in Kolhapur`,
-    description: `${hotelConfig.name} is a clean, secure, and family-friendly premium budget hotel located opposite Central Bus Stand in Kolhapur, Maharashtra.`,
+    description: `${hotelConfig.name} (Hotel Mahindra Deluxe) is a clean, secure, and family-friendly premium budget hotel located on NH4 Highway, Vathar Tarf Vadgaon, Kolhapur, Maharashtra.`,
     images: ['/images/og-image.jpg']
   },
   robots: {

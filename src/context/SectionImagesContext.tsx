@@ -227,6 +227,16 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
         const cached = localStorage.getItem(STORAGE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
+          // Filter out deprecated resort pool image from about section if cached in localStorage
+          if (parsed?.about && Array.isArray(parsed.about)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            parsed.about = parsed.about.map((item: any) => {
+              if (item.url && item.url.includes("1571896349842-33c89424de2d")) {
+                return { ...item, url: IMAGES.about.serviceSmile };
+              }
+              return item;
+            });
+          }
           // Merge with defaults in case new keys were added
           setImagesMap((prev) => ({
             ...prev,

@@ -50,13 +50,7 @@ export default function RoomCard({ room }: RoomCardProps) {
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 380px"
         />
-        {/* Floating Price Tag */}
-        <div className="absolute top-4 left-4 bg-bg-base/95 backdrop-blur-sm px-3.5 py-1.5 border border-border-custom/50 shadow-sm z-10">
-          <span className="font-serif text-sm font-bold text-text-main">
-            {room.price}
-          </span>
-          <span className="text-[10px] text-text-muted font-sans font-medium tracking-wide"> / Night</span>
-        </div>
+
       </div>
 
       {/* Room Details Block */}

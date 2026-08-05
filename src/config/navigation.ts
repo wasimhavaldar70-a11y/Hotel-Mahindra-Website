@@ -20,7 +20,6 @@ export interface NavItem {
 export const mainNavigation: NavItem[] = [
   { label: "Home", path: "/" },
   { label: "Rooms", path: "/rooms" },
-  { label: "Gallery", path: "/gallery" },
   { label: "Nearby Attractions", path: "/nearby" },
   { label: "About Us", path: "/about" },
   { label: "Contact", path: "/contact" }
