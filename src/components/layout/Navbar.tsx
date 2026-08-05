@@ -71,7 +71,7 @@ export default function Navbar() {
           <Link 
             href="/"
             className="flex flex-col group focus:outline-none"
-            aria-label="Mahendra Hotel Home"
+            aria-label="Hotel Mahindra Deluxe Home"
           >
             <span className="font-serif text-xl md:text-2xl font-bold tracking-widest text-text-main group-hover:text-primary transition-colors duration-200">
               {hotelConfig.logoText}

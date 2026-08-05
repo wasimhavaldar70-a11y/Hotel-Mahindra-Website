@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { SectionKey, SectionImageItem } from "../types/sectionImages";
 import { IMAGES } from "../data/images";
+import { attractionsData } from "../data/attractions";
 import { galleryData } from "../data/gallery";
 import { supabase } from "../lib/supabase/client";
 
@@ -346,20 +347,23 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
                 const publicUrl = publicUrlData?.data?.publicUrl || 
                   `https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/hotel-images/attractions/${file.name}`;
                 
-                const fallback = attractionsData[idx] || attractionsData[0];
-                const fileCleanTitle = file.name
-                  .replace(/\.[^/.]+$/, "")
-                  .replace(/[-_]/g, " ")
-                  .replace(/\b\w/g, (l: string) => l.toUpperCase());
+                let attractionIndex = idx;
+                if (file.name.includes("1785908800102")) attractionIndex = 0;
+                else if (file.name.includes("1785908804431")) attractionIndex = 1;
+                else if (file.name.includes("1785908811429")) attractionIndex = 2;
+                else if (file.name.includes("1785908814767")) attractionIndex = 3;
+                else if (file.name.includes("1785908817964")) attractionIndex = 4;
+
+                const matchedAttraction = attractionsData[attractionIndex] || attractionsData[0];
 
                 return {
-                  id: `storage-hotel-att-${idx}`,
+                  id: `storage-hotel-att-${attractionIndex}`,
                   sectionKey: "attractions",
                   url: publicUrl,
-                  title: fileCleanTitle || fallback.name,
-                  description: fallback.description,
-                  category: "Pilgrimage",
-                  sortOrder: idx
+                  title: matchedAttraction.name,
+                  description: matchedAttraction.description,
+                  category: attractionIndex < 2 ? "Pilgrimage" : (attractionIndex === 3 ? "Leisure" : "Heritage"),
+                  sortOrder: attractionIndex
                 };
               });
 

@@ -16,9 +16,9 @@
 
 export const hotelConfig = {
   // BRAND INFO
-  name: "Hotel Mahendra Deluxe",
-  logoText: "MAHENDRA",
-  logoSubtext: "DELUXE",
+  name: "Hotel Mahindra Deluxe",
+  logoText: "MAHINDRA",
+  logoSubtext: "HOTEL DELUXE",
   tagline: "Your Comfort, Our Commitment",
   description: "A premium budget hotel offering clean, secure, and modern accommodation right on NH4 Highway in Vathar Tarf Vadgaon, Kolhapur, Maharashtra.",
 

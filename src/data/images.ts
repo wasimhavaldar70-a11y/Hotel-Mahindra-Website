@@ -44,11 +44,11 @@ export const IMAGES = {
 
   // NEARBY ATTRACTIONS
   attractions: {
-    mahalaxmiTemple: "https://images.unsplash.com/photo-1609946727107-a5700e57f14a?auto=format&fit=crop&w=1200&q=80",
-    jyotibaTemple: "https://images.unsplash.com/photo-1627894043065-45617300702d?auto=format&fit=crop&w=1200&q=80",
-    panhalaFort: "https://images.unsplash.com/photo-1599839575945-a9e5af0c3fa5?auto=format&fit=crop&w=1200&q=80",
-    rankalaLake: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    newPalace: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1200&q=80"
+    mahalaxmiTemple: "https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/hotel-images/attractions/1785908800102-nkos.jpg",
+    jyotibaTemple: "https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/hotel-images/attractions/1785908804431-2u58.jfif",
+    panhalaFort: "https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/hotel-images/attractions/1785908811429-zqf2.jpg",
+    rankalaLake: "https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/hotel-images/attractions/1785908814767-niyb.jpg",
+    newPalace: "https://nmkjmoqtkpfmseswiqpq.supabase.co/storage/v1/object/public/hotel-images/attractions/1785908817964-87zx.jfif"
   },
 
   // GALLERY ITEMS
