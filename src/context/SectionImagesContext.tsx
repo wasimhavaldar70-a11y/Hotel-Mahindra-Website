@@ -228,6 +228,10 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
         const cached = localStorage.getItem(STORAGE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
+          // Ensure attractions is capped strictly to 5 photos
+          if (parsed?.attractions && Array.isArray(parsed.attractions)) {
+            parsed.attractions = parsed.attractions.slice(0, 5);
+          }
           // Filter out deprecated resort pool image from about section if cached in localStorage
           if (parsed?.about && Array.isArray(parsed.about)) {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -376,12 +380,16 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
           console.log("Hotel images attractions folder check:", storageEx2);
         }
 
+        if (fetchedMap["attractions"]) {
+          fetchedMap["attractions"] = fetchedMap["attractions"].slice(0, 5);
+        }
+
         if (Object.keys(fetchedMap).length > 0) {
           setImagesMap((prev) => {
             const updated = { ...prev };
             (Object.keys(fetchedMap) as SectionKey[]).forEach((k) => {
               if (fetchedMap[k] && fetchedMap[k]!.length > 0) {
-                updated[k] = fetchedMap[k]!;
+                updated[k] = k === "attractions" ? fetchedMap[k]!.slice(0, 5) : fetchedMap[k]!;
               }
             });
             if (typeof window !== "undefined") {
@@ -402,7 +410,11 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
   const saveToLocalStorage = (newMap: Record<SectionKey, SectionImageItem[]>) => {
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newMap));
+        const toSave = { ...newMap };
+        if (toSave.attractions) {
+          toSave.attractions = toSave.attractions.slice(0, 5);
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
       } catch (err) {
         console.error("LocalStorage write error:", err);
       }
@@ -410,7 +422,11 @@ export function SectionImagesProvider({ children }: { children: React.ReactNode 
   };
 
   const getSectionImages = (sectionKey: SectionKey): SectionImageItem[] => {
-    return imagesMap[sectionKey] || defaultSectionImages[sectionKey] || [];
+    const raw = imagesMap[sectionKey] || defaultSectionImages[sectionKey] || [];
+    if (sectionKey === "attractions") {
+      return raw.slice(0, 5);
+    }
+    return raw;
   };
 
   const addSectionImage = async (
