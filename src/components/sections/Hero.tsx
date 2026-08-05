@@ -131,7 +131,7 @@ export default function Hero() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xs md:text-sm font-serif tracking-[0.3em] font-semibold text-primary uppercase mb-4 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]"
         >
-          WELCOME TO MAHENDRA HOTEL
+          WELCOME TO MAHINDRA HOTEL
         </motion.p>
 
         {/* Headline (No height constraints, allowing natural line wrapping and no cropping) */}
